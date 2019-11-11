@@ -87,5 +87,7 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-assets/models
 assets/textures
+
+assets/models/*
+!assets/models/suzanne.obj
