@@ -1,0 +1,200 @@
+#version 460
+#extension GL_NV_ray_tracing : require
+#extension GL_EXT_nonuniform_qualifier : enable
+#extension GL_GOOGLE_include_directive : enable
+
+#include "utils.glsl"
+
+layout(location = 0) rayPayloadNV RayPayload Ray;
+layout(location = 1) rayPayloadNV ShadowRayPayload ShadowRay;
+
+layout(binding = 0, set = 0) uniform accelerationStructureNV topLevelAS;
+
+layout(binding = 1, set = 0, rgba8) uniform image2D outputImage;
+layout(binding = 2, rgba32f) uniform image2D accumulationImage;
+
+layout(binding = 3, set = 0) uniform CameraData {
+  mat4 mViewInverse;
+  mat4 mProjectionInverse;
+  float aperture;
+  float focusDistance;
+  uint numberOfSamples;
+  uint totalSampleCount;
+  uint numberOfBounces;
+  uint lightCount;
+} uCamera;
+
+layout(binding = 4, set = 0, std430) readonly buffer GeometryBuffer {
+  Vertex GeometryAttributes[];
+} GeometryAttributesArray[];
+
+layout(binding = 5, set = 0, std430) readonly buffer FacesBuffer {
+  uvec4 Faces[];
+} FaceArray[];
+
+layout(binding = 6, set = 0, std430) readonly buffer MaterialBuffer {
+  Material material;
+} MaterialArray[];
+
+layout(binding = 7, set = 0, std430, row_major) readonly buffer InstanceBuffer {
+  Instance instance;
+} InstanceArray[];
+
+layout(binding = 8, set = 0, std430) readonly buffer LightBuffer {
+  Light light;
+} LightBufferArray[];
+
+LightSource PickRandomLightSource(inout uint seed, in vec3 surfacePos, out vec3 lightDirection, out float lightDistance) {
+  // abort if no lights are in the scene
+  if (uCamera.lightCount <= 0) return EMPTY_LIGHT_SOURCE;
+
+  uint lightIndex = uint(Randf01(seed) * uCamera.lightCount);
+  const Light light = LightBufferArray[nonuniformEXT(lightIndex)].light;
+  const uint geometryInstanceId = light.geometryInstanceIndex;
+  const Instance instance = InstanceArray[nonuniformEXT(geometryInstanceId)].instance;
+  const uint materialId = instance.materialIndex;
+  const uint geometryId = instance.geometryIndex;
+
+  const vec3 emission = MaterialArray[materialId].material.color;
+
+  const uint faceIndex = uint(Randf01(seed) * instance.faceCount);
+
+  const vec2 attribs = SampleTriangle(vec2(Randf01(seed), Randf01(seed)));
+
+  const uvec4 face = FaceArray[nonuniformEXT(geometryId)].Faces[faceIndex];
+
+  const Vertex v0 = GeometryAttributesArray[nonuniformEXT(geometryId)].GeometryAttributes[int(face.x)];
+  const Vertex v1 = GeometryAttributesArray[nonuniformEXT(geometryId)].GeometryAttributes[int(face.y)];
+  const Vertex v2 = GeometryAttributesArray[nonuniformEXT(geometryId)].GeometryAttributes[int(face.z)];
+
+  const vec3 p0 = (instance.transformMatrix * vec4(v0.position.xyz, 1.0)).xyz;
+  const vec3 p1 = (instance.transformMatrix * vec4(v1.position.xyz, 1.0)).xyz;
+  const vec3 p2 = (instance.transformMatrix * vec4(v2.position.xyz, 1.0)).xyz;
+  const vec3 pw = blerp(attribs, p0, p1, p2);
+
+  const vec3 n0 = v0.normal.xyz;
+  const vec3 n1 = v1.normal.xyz;
+  const vec3 n2 = v2.normal.xyz;
+  const vec3 nw = normalize(mat3x3(instance.transformMatrix) * blerp(attribs, n0.xyz, n1.xyz, n2.xyz));
+
+  const float triangleArea = 0.5 * length(cross(p1 - p0, p2 - p0));
+
+  const vec3 lightSurfacePos = pw;
+  const vec3 lightEmission = emission;
+  vec3 lightNormal = normalize(lightSurfacePos - surfacePos);
+
+  const vec3 lightPos = lightSurfacePos - surfacePos;
+  const float lightDist = length(lightPos);
+  const float lightDistSq = lightDist * lightDist;
+  vec3 lightDir = lightPos / lightDist;
+
+  // backface
+  if (dot(nw, lightDir) > -EPSILON) {
+    lightNormal = -lightNormal;
+  }
+
+  const float lightPdf = lightDistSq / (triangleArea * abs(dot(lightNormal, lightDir)));
+
+  const vec4 emissionAndGeometryId = vec4(
+    lightEmission, geometryInstanceId
+  );
+  const vec4 directionAndPdf = vec4(
+    lightDir, lightPdf
+  );
+
+  lightDirection = lightDir;
+  lightDistance = lightDist;
+
+  return LightSource(
+    emissionAndGeometryId,
+    directionAndPdf
+  );
+}
+
+void main() {
+  const uint sampleCount = uCamera.numberOfSamples;
+  const uint bounceCount = uCamera.numberOfBounces;
+  const uint totalSampleCount = uCamera.totalSampleCount;
+
+  const ivec2 ipos = ivec2(gl_LaunchIDNV.xy);
+
+  Ray.seed = Tea(Tea(ipos.x, ipos.y), uCamera.totalSampleCount);
+
+  const float tMin = 0.01;
+  const float tMax = 8192.0;
+
+  const uint cullMask = 0x80; // -> GeometryLayout.mask
+
+  // in case camera UBO isn't staged
+  const float aperture = uCamera.aperture;
+  const float focusDistance = uCamera.focusDistance;
+  const mat4 mViewInverse = uCamera.mViewInverse;
+  const mat4 mProjectionInverse = uCamera.mProjectionInverse;
+
+  vec3 pixelColor = vec3(0);
+  for (uint ss = 0; ss < sampleCount; ++ss) {
+    const vec2 offset = aperture / 2.0 * RandInUnitDisk(Ray.seed);
+    const vec2 pixel = vec2(ipos.x + Randf01(Ray.seed), ipos.y + Randf01(Ray.seed));
+    const vec2 uv = (pixel / gl_LaunchSizeNV.xy) * 2.0 - 1.0;
+
+    vec4 origin = mViewInverse * vec4(offset, 0, 1);
+    vec4 target = mProjectionInverse * (vec4(uv.x, uv.y, 1, 1));
+    vec4 direction = mViewInverse * vec4(normalize(target.xyz * focusDistance - vec3(offset, 0)), 0);
+
+    vec3 radiance = vec3(0);
+    Ray.throughput = vec4(1);
+    for (uint bb = 0; bb < bounceCount; ++bb) {
+      // shoot initial ray
+      // this ray returns us the initial closest-hit position on a surface
+      traceNV(topLevelAS, gl_RayFlagsOpaqueNV, cullMask, 1, 1, 1, origin.xyz, tMin, direction.xyz, tMax, 1);
+      vec3 surfacePosition = ShadowRay.hit;
+      // ray missed everything
+      //bool initialMiss = ShadowRay.shadowed;
+
+      // pick a random light source
+      // also returns a direction which we will shoot our shadow ray to
+      vec3 lightDirection = vec3(0);
+      float lightDistance = 0.0;
+      LightSource lightSource = PickRandomLightSource(Ray.seed, surfacePosition, lightDirection, lightDistance);
+      Ray.lightSource = lightSource;
+
+      // shoot the shadow ray
+      traceNV(topLevelAS, gl_RayFlagsTerminateOnFirstHitNV, 0xFF, 1, 1, 1, surfacePosition, EPSILON, lightDirection, lightDistance - EPSILON, 1);
+      Ray.shadowed = ShadowRay.shadowed;
+
+      // execute the shading
+      // use callable shader for this?
+      traceNV(topLevelAS, gl_RayFlagsOpaqueNV, cullMask, 0, 0, 0, origin.xyz, tMin, direction.xyz, tMax, 0);
+
+      radiance += Ray.radianceAndDistance.rgb;
+
+      // abort if the ray is either invalid or didn't hit anything
+      const float t = Ray.radianceAndDistance.w;
+      if (t < 0.0 || Ray.scatterDirection.w <= 0.0) break;
+
+      // move the ray based on the bsdf direction
+      origin = origin + t * direction;
+      direction = vec4(Ray.scatterDirection.xyz, 0);
+    };
+
+    pixelColor += radiance;
+  };
+
+  const bool accumulate = sampleCount != totalSampleCount;
+  const vec3 accumulatedColor = imageLoad(accumulationImage, ivec2(ipos.xy)).rgb * float(accumulate) + pixelColor;
+
+  pixelColor = accumulatedColor * (1.0 / totalSampleCount);
+
+  imageStore(accumulationImage, ivec2(ipos.xy), vec4(accumulatedColor, 0));
+
+  // apply tonemapping
+  // our color is now in linear space
+  pixelColor = Uncharted2ToneMapping(pixelColor);
+
+  // additional color dithering to hide color gradient seams
+  pixelColor = DitherRGB(pixelColor, ipos);
+  // add some color grading
+  pixelColor = ColorGrading(pixelColor);
+
+  imageStore(outputImage, ivec2(ipos.xy), vec4(pixelColor, 0));
+}
