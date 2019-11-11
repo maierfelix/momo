@@ -9,6 +9,7 @@ Scenes are downloaded from [here](https://benedikt-bitterli.me/resources/)
 | Bedroom |
 :-------------------------:|
 <a><img src="https://i.imgur.com/Sr7mL1W.png" height="228"></a>
+
 | Suzanne |
 :-------------------------:|
 <a><img src="https://i.imgur.com/RgKfrbV.png" height="228"></a>
