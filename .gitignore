@@ -91,3 +91,4 @@ assets/textures
 
 assets/models/*
 !assets/models/suzanne.obj
+!assets/models/plane.obj

@@ -8,12 +8,7 @@ const TEXTURE_PATH = "/textures/";
 
 function generateCornellBox(Demo, Plane) {
   let s = 128.0;
-  let IOR = 0.1;
   let color = [0.2];
-
-  //let HeadAlbedo = Demo.loadTextureFile(ASSET_PATH + TEXTURE_PATH + "White_stucco_wall_01_2K_Base_Color.png");
-  //let HeadNormal = Demo.loadTextureFile(ASSET_PATH + TEXTURE_PATH + "White_stucco_wall_01_2K_Normal.png");
-  //let HeadMetalRoughness = Demo.loadTextureFile(ASSET_PATH + TEXTURE_PATH + "White_stucco_wall_01_2K_Metallic_Roughness.png");
 
   let material = Demo.addMaterial({
     color: [32],
@@ -79,13 +74,8 @@ function generateCornellBox(Demo, Plane) {
 
   /* Load all required Geometries*/
   let Plane = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "plane.obj");
-  let Plane2 = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "plane2.obj");
   let Star = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "star.obj");
   let Cube = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "cube.obj");
-  //let Sphere = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "sphere.obj");
-  //let Head = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "head.obj");
-  //let Body = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "body.obj");
-  //let Robot = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "robot_steampunk.obj");
 
   let MetalAlbedo = Demo.loadTextureFile(ASSET_PATH + TEXTURE_PATH + "[4K]Metal03/Metal03_col.jpg");
   let MetalNormal = Demo.loadTextureFile(ASSET_PATH + TEXTURE_PATH + "[4K]Metal03/Metal03_nrm.jpg");
