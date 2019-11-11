@@ -9,6 +9,9 @@ Scenes are downloaded from [here](https://benedikt-bitterli.me/resources/)
 | Bedroom |
 :-------------------------:|
 <a><img src="https://i.imgur.com/Sr7mL1W.png" height="228"></a>
+| Suzanne |
+:-------------------------:|
+<a><img src="https://i.imgur.com/RgKfrbV.png" height="228"></a>
 
 ## TODO:
 
@@ -16,7 +19,8 @@ Scenes are downloaded from [here](https://benedikt-bitterli.me/resources/)
  - Glass shader
  - HDR environment probes
  - Optix AI Denoiser (recently got Vulkan interopability)
- - HTML5 based GUI using [Azula](https://github.com/maierfelix/azula)
+ - HTML5 based GUI using [*azula*](https://github.com/maierfelix/azula)
+ - Validate Clearcoat Parameter
 
 ## WebAssembly:
 

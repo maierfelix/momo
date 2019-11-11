@@ -60,7 +60,7 @@ vec3 DisneyEval(in float NdotL, in const float NdotV, in const float NdotH, in c
   const float fr = mix(0.04, 1.0, fh);
   const float gr = SmithGGX_G(NdotV, 0.25) * SmithGGX_G(NdotL, 0.25);
 
-  const vec3 f = ((1.0 / PI) * mix(fd, ss, shading.subsurface) * cd_lin + f_sheen) * (1.0 - shading.metallic) + gs * fs * ds + (shading.clearcoat) * gr * fr * dr;
+  const vec3 f = ((1.0 / PI) * mix(fd, ss, shading.subsurface) * cd_lin + f_sheen) * (1.0 - shading.metallic) + gs * fs * ds + (0.25 * shading.clearcoat) * gr * fr * dr;
   return f * NdotL;
 }
 
@@ -76,14 +76,14 @@ vec3 DisneySample(inout uint seed, in const vec3 V, in const vec3 N) {
   if (r1 < shading.clearcoat) {
     r1 /= (shading.clearcoat);
     const float a = mix(0.1, 0.001, shading.clearcoat_gloss);
-    const float NdotH = sqrt((1.0 - pow(a*a, 1.0 - r1)) / (1.0 - a*a));
-    const float sinTheta = sqrt(1.0 - NdotH * NdotH);
+    const float cosTheta = sqrt((1.0 - pow(a*a, 1.0 - r2)) / (1.0 - a*a));
+    const float sinTheta = sqrt(max(0.0, 1.0 - (cosTheta * cosTheta)));
     const float phi = r1 * TWO_PI;
-    vec3 H = vec3(
+    vec3 H = normalize(vec3(
       cos(phi) * sinTheta,
-      NdotH,
-      sin(phi) * sinTheta
-    );
+      sin(phi) * sinTheta,
+      cosTheta
+    ));
     H = H.x * T + H.y * B + H.z * N;
     if (dot(H, V) <= 0.0) H = H * -1.0;
     return reflect(-V, H);
@@ -97,11 +97,11 @@ vec3 DisneySample(inout uint seed, in const vec3 V, in const vec3 N) {
     const float cosTheta = sqrt((1.0 - r2) / (1.0 + (a*a-1.0) * r2));
     const float sinTheta = sqrt(max(0.0, 1.0 - (cosTheta * cosTheta)));
     const float phi = r1 * TWO_PI;
-    vec3 H = vec3(
+    vec3 H = normalize(vec3(
       cos(phi) * sinTheta,
       sin(phi) * sinTheta,
       cosTheta
-    );
+    ));
     H = H.x * T + H.y * B + H.z * N;
     if (dot(H, V) <= 0.0) H = H * -1.0;
     return reflect(-V, H);

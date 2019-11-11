@@ -126,7 +126,7 @@ void main() {
   const vec3 tex3 = texture(textureArray, vec3(uv, material.texEmissiveIndex)).rgb;
 
   // material color
-  vec3 color = tex0 + pow(material.color, vec3(INV_GAMMA));
+  const vec3 color = tex0 + pow(material.color, vec3(INV_GAMMA));
   // material normal
   const vec3 normal = normalize(
     material.texNormalIndex > 0 ?
@@ -156,10 +156,6 @@ void main() {
   vec3 throughput = Ray.throughput.rgb;
 
   radiance += emission * throughput;
-
-  const vec3 W = vec3(0.2125, 0.7154, 0.0721);
-  vec3 intensity = vec3(dot(color, W));
-  color = mix(intensity, color, 1.25);
 
   shading.base_color = color;
   shading.metallic = clamp(metalness, 0.001, 0.999);
@@ -193,10 +189,10 @@ void main() {
   const vec3 L = bsdfDir;
   const vec3 H = normalize(V + L);
 
-  const float NdotH = max(0.0, dot(N, H));
-  const float NdotL = max(0.0, dot(L, N));
-  const float HdotL = max(0.0, dot(H, L));
-  const float NdotV = max(0.0, dot(N, V));
+  const float NdotH = abs(dot(N, H));
+  const float NdotL = abs(dot(L, N));
+  const float HdotL = abs(dot(H, L));
+  const float NdotV = abs(dot(N, V));
 
   float pdf = DisneyPdf(NdotH, NdotL, HdotL);
   if (pdf > 0.0) {
