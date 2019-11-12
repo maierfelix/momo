@@ -1,6 +1,6 @@
 import { dirname } from "./src/utils.mjs";
 
-import RayTracingDemo from "./src/index.mjs";
+import Momo from "./src/index.mjs";
 
 const ASSET_PATH = dirname + "/assets/";
 const MODEL_PATH = "/models/";
@@ -59,16 +59,16 @@ function generateCornellBox(Plane, material, scale) {
 
 (async function main() {
 
-  let Demo = new RayTracingDemo();
+  let momo = new Momo();
 
-  await Demo.create();
+  await momo.create();
 
   /* Load all required Geometries*/
-  let Plane = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "plane.obj");
-  let Suzanne = Demo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "suzanne.obj");
+  let Plane = momo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "plane.obj");
+  let Suzanne = momo.loadGeometryFile(ASSET_PATH + MODEL_PATH + "suzanne.obj");
 
   /* Generate cornell box */
-  let MaterialCornellBox = Demo.addMaterial({
+  let MaterialCornellBox = momo.addMaterial({
     color: [64],
     metalness: 0.005,
     roughness: 0.008,
@@ -84,7 +84,7 @@ function generateCornellBox(Plane, material, scale) {
       rotation: { x: 0, y: 0, z: 0 },
       translation: { x: 0, y: 18, z: 0}
     },
-    material: Demo.addMaterial({
+    material: momo.addMaterial({
       color: [248,122,122],
       metalness: 0.175,
       roughness: 0.1,
@@ -101,7 +101,7 @@ function generateCornellBox(Plane, material, scale) {
       rotation: { x: 0, y: 0, z: 0 },
       translation: { x: 0, y: CornellBoxScale - 1, z: 0 }
     },
-    material: Demo.addMaterial({
+    material: momo.addMaterial({
       color: [1600]
     })
   });
@@ -113,12 +113,12 @@ function generateCornellBox(Plane, material, scale) {
       rotation: { x: 140, y: 90, z: 0 },
       translation: { x: -CornellBoxScale * 0.75, y: CornellBoxScale * 0.5, z: 0 }
     },
-    material: Demo.addMaterial({
+    material: momo.addMaterial({
       color: [1400]
     })
   });
 
   /* Run the ray tracer */
-  Demo.execute();
+  momo.execute();
 
 })();

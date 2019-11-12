@@ -44,7 +44,7 @@ let validationLayers = [
   "VK_LAYER_LUNARG_standard_validation"
 ];
 
-class RayTracingDemo extends VulkanApplication {
+class Momo extends VulkanApplication {
   constructor() {
     super({ validationLayers, requiredExtensions, desiredSurfaceFormat });
     this.deviceName = "";
@@ -52,7 +52,7 @@ class RayTracingDemo extends VulkanApplication {
   }
 };
 
-RayTracingDemo.prototype.create = async function() {
+Momo.prototype.create = async function() {
   LOG("Initializing TinyObjLoader (WebAssembly)");
   await tolw.init();
   LOG("Creating window");
@@ -77,7 +77,7 @@ RayTracingDemo.prototype.create = async function() {
   this.rayTracer = this.createRayTracer();
 };
 
-RayTracingDemo.prototype.execute = function() {
+Momo.prototype.execute = function() {
   let drag = false;
   let {window, rayTracer} = this;
   LOG("Executing RayTracer");
@@ -128,14 +128,14 @@ RayTracingDemo.prototype.execute = function() {
   })();
 };
 
-RayTracingDemo.prototype.loadGeometryFile = function(path) {
+Momo.prototype.loadGeometryFile = function(path) {
   let ext = path.substr(path.lastIndexOf("."));
   if (ext !== ".obj") WARN(`This Demo only supports Wavefront OBJ (.obj) as object files`);
   let out = this.addGeometryMesh(readObjectFile(path));
   return out;
 };
 
-RayTracingDemo.prototype.loadTextureFile = function(path) {
+Momo.prototype.loadTextureFile = function(path) {
   let ext = path.substr(path.lastIndexOf("."));
   let out = null;
   let buffer = readBinaryFile(path);
@@ -157,7 +157,7 @@ RayTracingDemo.prototype.loadTextureFile = function(path) {
   return out;
 };
 
-RayTracingDemo.prototype.createTextureFromColor = function(opts) {
+Momo.prototype.createTextureFromColor = function(opts) {
   if (typeof opts !== "object") {
     throw new TypeError(`Argument 1 must be of type 'Object'`);
   }
@@ -195,27 +195,27 @@ RayTracingDemo.prototype.createTextureFromColor = function(opts) {
   });
 };
 
-RayTracingDemo.prototype.addGeometryMesh = function(geometry) {
+Momo.prototype.addGeometryMesh = function(geometry) {
   return this.rayTracer.addGeometry(geometry);
 };
 
-RayTracingDemo.prototype.addMaterial = function(material) {
+Momo.prototype.addMaterial = function(material) {
   return this.rayTracer.addMaterial(material);
 };
 
-RayTracingDemo.prototype.addLight = function(light) {
+Momo.prototype.addLight = function(light) {
   return this.rayTracer.addLight(light);
 };
 
-RayTracingDemo.prototype.useSkyboxTexture = function(texture) {
+Momo.prototype.useSkyboxTexture = function(texture) {
   this.skyboxTexture = texture;
 };
 
-RayTracingDemo.prototype.drawFrame = function() {
+Momo.prototype.drawFrame = function() {
   this.drawDefaultFrame();
 };
 
-RayTracingDemo.prototype.createRayTracer = function() {
+Momo.prototype.createRayTracer = function() {
   let {swapchain, surface, window, logicalDevice, physicalDevice} = this;
   let application = this;
   let rayTracer = new RayTracer({
@@ -229,4 +229,4 @@ RayTracingDemo.prototype.createRayTracer = function() {
   return rayTracer;
 };
 
-export default RayTracingDemo;
+export default Momo;
