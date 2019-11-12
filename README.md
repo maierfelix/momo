@@ -12,7 +12,7 @@ Scenes are downloaded from [here](https://benedikt-bitterli.me/resources/)
 :-------------------------:|
 <a><img src="https://i.imgur.com/Sr7mL1W.png" height="228"></a>
 
-| Suzanne |
+| Meet Mat |
 :-------------------------:|
 <a><img src="https://i.imgur.com/0Xs1vwC.png" height="252"></a>
 
