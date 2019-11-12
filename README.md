@@ -14,7 +14,7 @@ Scenes are downloaded from [here](https://benedikt-bitterli.me/resources/)
 
 | Suzanne |
 :-------------------------:|
-<a><img src="https://i.imgur.com/RgKfrbV.png" height="228"></a>
+<a><img src="https://i.imgur.com/0Xs1vwC.png" height="252"></a>
 
 ## TODO:
 
