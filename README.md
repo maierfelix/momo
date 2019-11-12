@@ -2,8 +2,6 @@
 
 This project allows to render photorealistic images. The rendering process is accelerated using NVIDIA's new [RTX technology](https://developer.nvidia.com/rtx), which drastically reduces the necessary time to render high-quality images.
 
-The entire project was written in JavaScript and Vulkan and uses the Disney Principled BSDF material model (e.g. used in Blender Cycles).
-
 ## Screenshots:
 
 | Bedroom |
