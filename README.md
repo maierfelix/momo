@@ -6,15 +6,15 @@ The entire project was written in JavaScript and Vulkan and uses the Disney Prin
 
 ## Screenshots:
 
-Scenes are downloaded from [here](https://benedikt-bitterli.me/resources/)
-
 | Bedroom |
 :-------------------------:|
-<a><img src="https://i.imgur.com/Sr7mL1W.png" height="228"></a>
+<a><img src="https://i.imgur.com/Sr7mL1W.png" height="282"></a>
 
-| Meet Mat |
+| Living Room |
 :-------------------------:|
-<a><img src="https://i.imgur.com/03tnAjN.png" height="242"></a>
+<a><img src="https://i.imgur.com/ThC0mio.png" height="282"></a>
+
+Scenes are downloaded from [blendswap](https://www.blendswap.com/)
 
 ## TODO:
 
