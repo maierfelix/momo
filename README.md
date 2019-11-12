@@ -69,6 +69,24 @@ let Texture = momo.loadTextureFile("assets/textures/white.png");
 let Texture = momo.loadTextureFile("assets/textures/white.jpg");
 ````
 
+#### Momo.prototype.createTextureFromColor
+
+This method allows to manually create a texture.
+
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| color | *Array* | Array describing the color for the texture |
+| width | *Number* | Width of the texture |
+| height | *Number* | Height of the texture |
+
+````js
+let RedTexture = momo.createTextureFromColor({
+  color: [255, 0, 0],
+  width: 128,
+  height: 128
+});
+````
+
 ### Scene Description:
 
 There are multiple methods to describe a scene. Note that Momo has an instancing oriented style, meaning that it recommended to re-use geometry and materials.
