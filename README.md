@@ -25,16 +25,6 @@ Scenes are downloaded from [here](https://benedikt-bitterli.me/resources/)
  - HTML5 based GUI using [*azula*](https://github.com/maierfelix/azula)
  - Validate Clearcoat Parameter
 
-## WebAssembly:
-
-This project uses the following WebAssembly ports of popular C/C++ libraries:
-
- - [*jpeg-turbo*](https://www.npmjs.com/package/@cwasm/jpeg-turbo) - For reading JPEG files
- - [*lodepng*](https://www.npmjs.com/package/@cwasm/lodepng) - For reading PNG files
- - [*tolw*](https://www.npmjs.com/package/tolw) - For reading OBJ files
-
-Note that when reading large Object or Texture files, the memory usage gets quite high. That's because of a WebAssembly limitation where it's not possible to actually free/shrink WebAssembly memory, you can only grow it. This can be bypassed by e.g. destroying the entire WebAssembly module after each operation.
-
 ## API:
 
 See [this](https://github.com/maierfelix/momo/blob/master/main.mjs) file for an example on how to use the API.
@@ -188,3 +178,13 @@ Quad.addEmitterInstance({
   material: Demo.addMaterial({ color: [800, 600, 400] })
 });
 ```
+
+## WebAssembly:
+
+This project uses the following WebAssembly ports of popular C/C++ libraries:
+
+ - [*jpeg-turbo*](https://www.npmjs.com/package/@cwasm/jpeg-turbo) - For reading JPEG files
+ - [*lodepng*](https://www.npmjs.com/package/@cwasm/lodepng) - For reading PNG files
+ - [*tolw*](https://www.npmjs.com/package/tolw) - For reading OBJ files
+
+Note that when reading large Object or Texture files, the memory usage gets quite high. That's because of a WebAssembly limitation where it's not possible to actually free/shrink WebAssembly memory, you can only grow it. This can be bypassed by e.g. destroying the entire WebAssembly module after each operation.
