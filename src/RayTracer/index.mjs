@@ -184,29 +184,29 @@ RayTracer.prototype.createCamera = function() {
 
 RayTracer.prototype.createShaders = function() {
   let {logicalDevice} = this;
-  let includesPath = dirname + "/assets/shaders/";
+  let includesPath = dirname + "/shaders/";
   // !order dependant! -> usage =^ stage flags
   let shaders = [
     new ShaderModule({
       usage: VK_SHADER_STAGE_RAYGEN_BIT_NV,
       logicalDevice
-    }).fromFilePath(dirname + "/assets/shaders/ray-gen.rgen", includesPath),
+    }).fromFilePath(dirname + "/shaders/ray-gen.rgen", includesPath),
     new ShaderModule({
       usage: VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV,
       logicalDevice
-    }).fromFilePath(dirname + "/assets/shaders/ray-closest-hit.rchit", includesPath),
+    }).fromFilePath(dirname + "/shaders/ray-closest-hit.rchit", includesPath),
     new ShaderModule({
       usage: VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV,
       logicalDevice
-    }).fromFilePath(dirname + "/assets/shaders/shadow-ray-hit.rchit", includesPath),
+    }).fromFilePath(dirname + "/shaders/shadow-ray-hit.rchit", includesPath),
     new ShaderModule({
       usage: VK_SHADER_STAGE_MISS_BIT_NV,
       logicalDevice
-    }).fromFilePath(dirname + "/assets/shaders/ray-miss.rmiss", includesPath),
+    }).fromFilePath(dirname + "/shaders/ray-miss.rmiss", includesPath),
     new ShaderModule({
       usage: VK_SHADER_STAGE_MISS_BIT_NV,
       logicalDevice
-    }).fromFilePath(dirname + "/assets/shaders/shadow-ray-miss.rmiss", includesPath)
+    }).fromFilePath(dirname + "/shaders/shadow-ray-miss.rmiss", includesPath)
   ];
   return shaders;
 };

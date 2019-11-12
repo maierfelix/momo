@@ -89,9 +89,9 @@ LightSource PickRandomLightSource(inout uint seed, in vec3 surfacePos, out vec3 
   vec3 lightDir = lightPos / lightDist;
 
   // backface
-  if (dot(nw, lightDir) > -EPSILON) {
+  /*if (dot(nw, lightDir) > -EPSILON) {
     lightNormal = -lightNormal;
-  }
+  }*/
 
   const float lightPdf = lightDistSq / (triangleArea * abs(dot(lightNormal, lightDir)));
 
@@ -194,7 +194,7 @@ void main() {
   // additional color dithering to hide color gradient seams
   pixelColor = DitherRGB(pixelColor, ipos);
   // add some color grading
-  pixelColor = ColorGrading(pixelColor);
+  //pixelColor = ColorGrading(pixelColor);
 
   imageStore(outputImage, ivec2(ipos.xy), vec4(pixelColor, 0));
 }
