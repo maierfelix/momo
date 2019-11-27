@@ -6,7 +6,7 @@ This project allows to render photorealistic images. The rendering process is ac
 
 | Meet Mat |
 :-------------------------:|
-<a href="https://www.youtube.com/watch?v=41YoPafmgx8"><img src="https://i.imgur.com/Jz3Tum5.png" height="292"></a>
+<a href="https://www.youtube.com/watch?v=ZClWLdzJWUg"><img src="https://i.imgur.com/b8IoouL.png" height="292"></a>
 
 | Bedroom |
 :-------------------------:|
